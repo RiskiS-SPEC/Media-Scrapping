@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Scraper Berita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>📰 Scraper Berita</h1>
+        <form method="POST" action="/">
+            <label>🔍 Keyword:</label>
+            <input type="text" name="keyword" required value="{{ keyword }}">
+            <label>📅 Tanggal (opsional):</label>
+            <input type="date" name="tanggal" value="{{ tanggal }}">
+            <button type="submit">Cari</button>
+        </form>
+
+        {% if results %}
+        <h2>📢 Hasil Scraping</h2>
+
+        {% for media, articles in results.items() %}
+        <h3>{{ media|capitalize }}:</h3>
+        <ul>
+            {% for article in articles %}
+            <li>
+                {% if article.url %}
+                <a href="{{ article.url }}" target="_blank">{{ article.judul }}</a>
+                {% else %}
+                {{ article }}
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+
+        {% if chart_path %}
+        <h2>📈 Visualisasi Tren</h2>
+        <img src="{{ chart_path }}" alt="Grafik Tren Artikel">
+        {% endif %}
+
+        {% if sentiment_data %}
+        <h2>🧠 Analisis Sentimen Judul Berita</h2>
+        <table>
+            <tr>
+                <th>Media</th>
+                <th>Judul</th>
+                <th>Sentimen</th>
+                <th>Tanggal</th>
+            </tr>
+            {% for row in sentiment_data %}
+            <tr>
+                <td>{{ row.media }}</td>
+                <td>{{ row.judul }}</td>
+                <td>{{ row.sentimen }}</td>
+                <td>{{ row.tanggal_input }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+        {% if csv_path %}
+        <a class="download-link" href="{{ url_for('download_csv', filename=csv_path.split('/')[-1]) }}">📥 Download
+            Hasil ke CSV</a>
+        {% endif %}
+
+        {% endif %}
+    </div>
+</body>
+
+</html>
